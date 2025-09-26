@@ -29,6 +29,7 @@ public class RegisterService {
                 .email(email)
                 .name(name)
                 .password(passwordEncoder.encode(password))
+                .created_at(java.time.LocalDateTime.now())
                 .build();
 
         userRepository.save(user);
