@@ -31,9 +31,14 @@ public class RegisterController {
         String token = registerService.registerAndGenerateToken(registerRequest.getEmail(), registerRequest.getName(),
                 registerRequest.getPassword());
 
+        if (token == null) {
+            return ResponseEntity.status(400).body(new ErrorResponseDTO("Email déjà utilisé"));
+        }
+
         return ResponseEntity.ok(new JwtResponseDTO(token));
     }
 
+    // créer une fonction utilitaire réutilisable ?
     private String validateRequest(RegisterRequestDTO request) {
         if (request.getEmail() == null || request.getEmail().isBlank()) {
             return "Email obligatoire";
