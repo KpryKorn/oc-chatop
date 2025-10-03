@@ -27,8 +27,14 @@ public class LoginService {
             return null;
         }
 
-        var authentication = new UsernamePasswordAuthenticationToken(user.get().getEmail(), null);
+        var authentication = new UsernamePasswordAuthenticationToken(user.get().getEmail(), password);
 
         return jwtService.generateToken(authentication);
+    }
+
+    public User verifyUser(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        return user;
     }
 }

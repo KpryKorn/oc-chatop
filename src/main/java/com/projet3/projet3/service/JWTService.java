@@ -5,18 +5,20 @@ import java.time.temporal.ChronoUnit;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
+
+import com.projet3.projet3.entity.User;
 
 @Service
 public class JWTService {
+
+    private final JwtDecoder jwtDecoder;
     private JwtEncoder jwtEncoder;
 
-    public JWTService(JwtEncoder jwtEncoder) {
+    public JWTService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
         this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
     }
 
     public String generateToken(Authentication authentication) {
@@ -32,5 +34,14 @@ public class JWTService {
                 .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
 
         return this.jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+    }
+
+    public String extractUsername(String token) {
+        return jwtDecoder.decode(token).getSubject();
+    }
+
+    public Boolean isTokenValid(String token, User user) {
+        String username = extractUsername(token);
+        return username.equals(user.getEmail());
     }
 }

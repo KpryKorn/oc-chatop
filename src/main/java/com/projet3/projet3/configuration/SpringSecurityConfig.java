@@ -16,13 +16,14 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.projet3.projet3.filters.AuthFilter;
 
 @Configuration
 public class SpringSecurityConfig {
     private String jwtKey = "L3ZTXABqUs3y7BvUe4LqCpCGM2yB76ZXgDsBABE2U5TfM7MNapE+vjb0U8Pa0pm+";
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthFilter authFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -30,6 +31,8 @@ public class SpringSecurityConfig {
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/api-docs").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .addFilterBefore(authFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
