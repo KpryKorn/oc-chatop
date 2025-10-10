@@ -1,6 +1,7 @@
 package com.projet3.projet3.service;
 
 import com.projet3.projet3.dto.RentalRequestDTO;
+import com.projet3.projet3.dto.RentalResponseDTO;
 import com.projet3.projet3.entity.Rental;
 import com.projet3.projet3.entity.User;
 import com.projet3.projet3.repository.RentalRepository;
@@ -8,6 +9,7 @@ import com.projet3.projet3.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RentalService {
@@ -34,12 +36,38 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
-    public List<Rental> getAllRentals() {
-        return rentalRepository.findAll();
+    public List<RentalResponseDTO> getAllRentals() {
+        return rentalRepository.findAll().stream().map(rental -> {
+            RentalResponseDTO dto = new RentalResponseDTO();
+            dto.setId(rental.getId());
+            dto.setName(rental.getName());
+            dto.setSurface(rental.getSurface());
+            dto.setPrice(rental.getPrice());
+            dto.setPicture(rental.getPicture());
+            dto.setDescription(rental.getDescription());
+            dto.setOwnerId(rental.getOwner() != null ? rental.getOwner().getId() : null);
+            dto.setCreatedAt(rental.getCreated_at());
+            dto.setUpdatedAt(rental.getUpdated_at());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
-    public Rental getRentalById(Long id) {
-        return rentalRepository.findById(id).orElse(null);
+    public RentalResponseDTO getRentalResponseById(Long id) {
+        Rental rental = rentalRepository.findById(id).orElse(null);
+        if (rental == null) {
+            return null;
+        }
+        RentalResponseDTO dto = new RentalResponseDTO();
+        dto.setId(rental.getId());
+        dto.setName(rental.getName());
+        dto.setSurface(rental.getSurface());
+        dto.setPrice(rental.getPrice());
+        dto.setPicture(rental.getPicture());
+        dto.setDescription(rental.getDescription());
+        dto.setOwnerId(rental.getOwner() != null ? rental.getOwner().getId() : null);
+        dto.setCreatedAt(rental.getCreated_at());
+        dto.setUpdatedAt(rental.getUpdated_at());
+        return dto;
     }
 
     public Rental updateRental(Long id, RentalRequestDTO dto) {

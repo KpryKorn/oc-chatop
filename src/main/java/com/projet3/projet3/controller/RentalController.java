@@ -1,6 +1,7 @@
 package com.projet3.projet3.controller;
 
 import com.projet3.projet3.dto.RentalRequestDTO;
+import com.projet3.projet3.dto.RentalResponseDTO;
 import com.projet3.projet3.entity.Rental;
 import com.projet3.projet3.service.RentalService;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +25,18 @@ public class RentalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Rental>> getAllRentals() {
-        List<Rental> rentals = rentalService.getAllRentals();
+    public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
+        List<RentalResponseDTO> rentals = rentalService.getAllRentals();
         return ResponseEntity.ok(rentals);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Rental> getRentalById(@PathVariable Long id) {
-        Rental rental = rentalService.getRentalById(id);
-        if (rental == null) {
+    public ResponseEntity<RentalResponseDTO> getRentalById(@PathVariable Long id) {
+        RentalResponseDTO dto = rentalService.getRentalResponseById(id);
+        if (dto == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(rental);
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
