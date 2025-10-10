@@ -1,13 +1,19 @@
 package com.projet3.projet3.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "RENTALS")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

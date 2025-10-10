@@ -6,10 +6,12 @@ services:
     env_file: ./.env
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: projet3
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./script.sql:/docker-entrypoint-initdb.d/script.sql
 
 volumes:
   mysql-data:

@@ -1,0 +1,53 @@
+package com.projet3.projet3.controller;
+
+import com.projet3.projet3.dto.RentalRequestDTO;
+import com.projet3.projet3.dto.RentalResponseDTO;
+import com.projet3.projet3.entity.Rental;
+import com.projet3.projet3.service.RentalService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/rentals")
+public class RentalController {
+    private final RentalService rentalService;
+
+    public RentalController(RentalService rentalService) {
+        this.rentalService = rentalService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Rental> createRental(@RequestBody RentalRequestDTO rentalRequestDTO) {
+        Rental rental = rentalService.createRental(rentalRequestDTO);
+        return ResponseEntity.ok(rental);
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, List<RentalResponseDTO>>> getAllRentals() {
+        List<RentalResponseDTO> rentals = rentalService.getAllRentals();
+
+        Map<String, List<RentalResponseDTO>> mappedRentals = Map.of("rentals", rentals);
+        return ResponseEntity.ok(mappedRentals);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RentalResponseDTO> getRentalById(@PathVariable Long id) {
+        RentalResponseDTO dto = rentalService.getRentalResponseById(id);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Rental> updateRental(@PathVariable Long id, @RequestBody RentalRequestDTO rentalRequestDTO) {
+        Rental updatedRental = rentalService.updateRental(id, rentalRequestDTO);
+        if (updatedRental == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedRental);
+    }
+}
