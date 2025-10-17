@@ -7,6 +7,8 @@ import com.projet3.projet3.dto.JwtResponseDTO;
 import com.projet3.projet3.dto.RegisterRequestDTO;
 import com.projet3.projet3.service.RegisterService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +24,7 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO registerRequest) {
-        String error = validateRequest(registerRequest);
-        if (error != null) {
-            return ResponseEntity.badRequest().body(new ErrorResponseDTO(error));
-        }
-
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
         String token = registerService.registerAndGenerateToken(registerRequest.getEmail(), registerRequest.getName(),
                 registerRequest.getPassword());
 
@@ -36,25 +33,5 @@ public class RegisterController {
         }
 
         return ResponseEntity.ok(new JwtResponseDTO(token));
-    }
-
-    // créer une fonction utilitaire réutilisable ?
-    private String validateRequest(RegisterRequestDTO request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()) {
-            return "Email obligatoire";
-        }
-        if (!request.getEmail().contains("@")) {
-            return "Email invalide";
-        }
-        if (request.getName() == null || request.getName().isBlank()) {
-            return "Nom obligatoire";
-        }
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            return "Mot de passe obligatoire";
-        }
-        if (request.getPassword().length() < 6) {
-            return "Mot de passe trop court (min 6 caractères)";
-        }
-        return null;
     }
 }

@@ -14,23 +14,23 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Bean
-    public OpenAPI OpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("API Documentation")
-                        .version("v1.0.0"))
-                .servers(List.of(
-                        new Server()
-                                .url("http://localhost:8080")
-                                .description("Serveur de développement")))
-                .addSecurityItem(new SecurityRequirement().addList("jwt"))
-                .components(new Components()
-                        .addSecuritySchemes("jwt",
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .description("Authentification JWT (Bearer Token)")));
-    }
+        @Bean
+        public OpenAPI OpenAPI() {
+                return new OpenAPI()
+                                .info(new Info()
+                                                .title("API Documentation")
+                                                .version("v1.0.0"))
+                                .servers(List.of(
+                                                new Server()
+                                                                .url("http://localhost:8080/api")
+                                                                .description("Serveur de développement")))
+                                .addSecurityItem(new SecurityRequirement().addList("jwt"))
+                                .components(new Components()
+                                                .addSecuritySchemes("jwt",
+                                                                new SecurityScheme()
+                                                                                .type(SecurityScheme.Type.HTTP)
+                                                                                .scheme("bearer")
+                                                                                .bearerFormat("JWT")
+                                                                                .description("Authentification JWT (Bearer Token)")));
+        }
 }

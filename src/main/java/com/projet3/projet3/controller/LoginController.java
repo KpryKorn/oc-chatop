@@ -9,6 +9,8 @@ import com.projet3.projet3.dto.UserResponseDTO;
 import com.projet3.projet3.entity.User;
 import com.projet3.projet3.service.LoginService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,35 +28,13 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
-        String error = validateRequest(loginRequest);
-        if (error != null) {
-            return ResponseEntity.badRequest().body(new ErrorResponseDTO(error));
-        }
-
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         String token = loginService.authenticateAndGenerateToken(loginRequest.getEmail(), loginRequest.getPassword());
         if (token == null) {
             return ResponseEntity.status(401).body(new ErrorResponseDTO("Email ou mot de passe incorrect"));
         }
 
         return ResponseEntity.ok(new JwtResponseDTO(token));
-    }
-
-    // créer une fonction utilitaire réutilisable ?
-    private String validateRequest(LoginRequestDTO request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()) {
-            return "Email obligatoire";
-        }
-        if (!request.getEmail().contains("@")) {
-            return "Email invalide";
-        }
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            return "Mot de passe obligatoire";
-        }
-        if (request.getPassword().length() < 6) {
-            return "Mot de passe trop court (min 6 caractères)";
-        }
-        return null;
     }
 
     @GetMapping("/me")
