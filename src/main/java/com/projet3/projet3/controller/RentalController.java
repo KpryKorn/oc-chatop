@@ -5,6 +5,7 @@ import com.projet3.projet3.dto.RentalResponseDTO;
 import com.projet3.projet3.entity.Rental;
 import com.projet3.projet3.service.RentalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,16 +28,17 @@ public class RentalController {
             @RequestParam("price") Double price,
             @RequestParam("picture") MultipartFile picture,
             @RequestParam("description") String description,
-            @RequestParam("ownerId") Long ownerId) {
+            Authentication authentication) {
+
+        String email = authentication.getName();
 
         RentalRequestDTO dto = new RentalRequestDTO();
         dto.setName(name);
         dto.setSurface(surface);
         dto.setPrice(price);
         dto.setDescription(description);
-        dto.setOwnerId(ownerId);
 
-        rentalService.createRental(dto, picture);
+        rentalService.createRental(dto, picture, email);
         return ResponseEntity.ok(Map.of("message", "Rental created successfully"));
     }
 

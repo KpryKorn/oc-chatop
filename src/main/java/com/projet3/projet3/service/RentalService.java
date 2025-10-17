@@ -26,17 +26,21 @@ public class RentalService {
         this.fileStorageService = fileStorageService;
     }
 
-    public Rental createRental(RentalRequestDTO dto, MultipartFile pictureFile) {
+    private String buildPictureUrl(String fileName) {
+        return "http://localhost:8080/api/uploads/" + fileName;
+    }
+
+    public Rental createRental(RentalRequestDTO dto, MultipartFile pictureFile, String ownerEmail) {
         String fileName = fileStorageService.storeFile(pictureFile);
 
-        User owner = userRepository.findById(dto.getOwnerId())
+        User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
 
         Rental rental = Rental.builder()
                 .name(dto.getName())
                 .surface(dto.getSurface())
                 .price(dto.getPrice())
-                .picture(fileName)
+                .picture(buildPictureUrl(fileName))
                 .description(dto.getDescription())
                 .owner(owner)
                 .created_at(LocalDateTime.now())
