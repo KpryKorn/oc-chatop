@@ -5,7 +5,9 @@ import com.projet3.projet3.dto.RentalResponseDTO;
 import com.projet3.projet3.entity.Rental;
 import com.projet3.projet3.service.RentalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,25 @@ public class RentalController {
         this.rentalService = rentalService;
     }
 
-    @PostMapping
-    public ResponseEntity<Rental> createRental(@RequestBody RentalRequestDTO rentalRequestDTO) {
-        Rental rental = rentalService.createRental(rentalRequestDTO);
-        return ResponseEntity.ok(rental);
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, String>> createRental(
+            @RequestParam("name") String name,
+            @RequestParam("surface") Double surface,
+            @RequestParam("price") Double price,
+            @RequestParam("picture") MultipartFile picture,
+            @RequestParam("description") String description,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        RentalRequestDTO dto = new RentalRequestDTO();
+        dto.setName(name);
+        dto.setSurface(surface);
+        dto.setPrice(price);
+        dto.setDescription(description);
+
+        rentalService.createRental(dto, picture, email);
+        return ResponseEntity.ok(Map.of("message", "Rental created successfully"));
     }
 
     @GetMapping
