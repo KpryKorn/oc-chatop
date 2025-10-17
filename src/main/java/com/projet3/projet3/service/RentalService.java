@@ -7,7 +7,9 @@ import com.projet3.projet3.entity.User;
 import com.projet3.projet3.repository.RentalRepository;
 import com.projet3.projet3.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,23 +17,30 @@ import java.util.stream.Collectors;
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
-    public RentalService(RentalRepository rentalRepository, UserRepository userRepository) {
+    public RentalService(RentalRepository rentalRepository, UserRepository userRepository,
+            FileStorageService fileStorageService) {
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
     }
 
-    public Rental createRental(RentalRequestDTO dto) {
-        User owner = userRepository.findById(dto.getOwnerId()).orElse(null);
+    public Rental createRental(RentalRequestDTO dto, MultipartFile pictureFile) {
+        String fileName = fileStorageService.storeFile(pictureFile);
+
+        User owner = userRepository.findById(dto.getOwnerId())
+                .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
+
         Rental rental = Rental.builder()
                 .name(dto.getName())
                 .surface(dto.getSurface())
                 .price(dto.getPrice())
-                .picture(dto.getPicture())
+                .picture(fileName)
                 .description(dto.getDescription())
                 .owner(owner)
-                .created_at(dto.getCreatedAt())
-                .updated_at(dto.getUpdatedAt())
+                .created_at(LocalDateTime.now())
+                .updated_at(LocalDateTime.now())
                 .build();
         return rentalRepository.save(rental);
     }
