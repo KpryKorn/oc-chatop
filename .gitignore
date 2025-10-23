@@ -31,6 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+infra/.env
 
 ### Uploads ###
 src/main/resources/uploads/*.png
